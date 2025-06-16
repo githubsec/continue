@@ -32,4 +32,7 @@ export default {
   modulePathIgnorePatterns: [
     "<rootDir>/config/yaml/LocalPlatformClient.test.ts",
   ],
+  transformIgnorePatterns: [
+    "node_modules/(?!(node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill|web-streams-polyfill)/)"
+  ],
 };

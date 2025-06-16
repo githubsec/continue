@@ -89,6 +89,8 @@ export class SqliteDb {
       filename: SqliteDb.indexSqlitePath,
       driver: sqlite3.Database,
     });
+    //打印数据库路径
+    console.log("SqliteDb.indexSqlitePath", SqliteDb.indexSqlitePath);
 
     await SqliteDb.db.exec("PRAGMA busy_timeout = 3000;");
 

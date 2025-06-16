@@ -76,16 +76,17 @@ export class ChunkCodebaseIndex implements CodebaseIndex {
     }
 
     // Add tag
+    // 在 addTag 部分，将原来的 INSERT 改为 INSERT OR IGNORE
     for (const item of results.addTag) {
-      await db.run(
-        `
-        INSERT INTO chunk_tags (chunkId, tag)
-        SELECT id, ? FROM chunks
-        WHERE cacheKey = ?
-      `,
-        [tagString, item.cacheKey],
-      );
-      await markComplete([item], IndexResultType.AddTag);
+    await db.run(
+    `
+    INSERT OR IGNORE INTO chunk_tags (chunkId, tag)
+    SELECT id, ? FROM chunks
+    WHERE cacheKey = ?
+  `,
+    [tagString, item.cacheKey],
+  );
+  await markComplete([item], IndexResultType.AddTag);
       accumulatedProgress += 1 / results.addTag.length / 4;
       yield {
         progress: accumulatedProgress,

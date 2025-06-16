@@ -7,11 +7,13 @@ import {
   updateIndexAndAwaitGenerator,
 } from "./test/indexing";
 
+import fs from "fs";
+import { getIndexSqlitePath } from "../util/paths";
 import { CodeSnippetsCodebaseIndex } from "./CodeSnippetsIndex";
 import { DatabaseConnection, SqliteDb } from "./refreshIndex";
 import { IndexResultType } from "./types";
 
-describe.skip("CodeSnippetsCodebaseIndex", () => {
+describe("CodeSnippetsCodebaseIndex", () => {
   let index: CodeSnippetsCodebaseIndex;
   let db: DatabaseConnection;
 
@@ -24,7 +26,21 @@ describe.skip("CodeSnippetsCodebaseIndex", () => {
   }
 
   beforeAll(async () => {
+    // 删除测试数据库文件，确保每次测试都是全新数据库
+    const dbPath = getIndexSqlitePath();
+    if (fs.existsSync(dbPath)) {
+      fs.unlinkSync(dbPath);
+    }
+
     db = await SqliteDb.get();
+
+    // 显式创建数据库表
+    await CodeSnippetsCodebaseIndex._createTables(db);
+
+    // 清理测试数据
+    await db.run("DELETE FROM code_snippets_tags");
+    await db.run("DELETE FROM code_snippets");
+
     index = new CodeSnippetsCodebaseIndex(testIde);
   });
 
